@@ -1,6 +1,6 @@
 ## Tensors-Analyzer: A Simple Tool for Analyzing Tensors
 
-This repository provides a tool for analyzing tensors, specifically focusing on visualizing their distribution. It utilizes numpy and matplotlib for data processing and visualization.
+This repository provides a tool for analyzing tensors, specifically focusing on visualizing their distribution. It utilizes numpy and matplotlib for data processing and visualization. It also writes a C++ extension to enable efficient numpy array operations, to prevent any additional memory overhead, So it can handle a large number of tensors. such as Loading, Processing, and Drawing the distribution of whole LLMs tensors.
 
 ## Installation
 
