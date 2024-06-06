@@ -1,0 +1,3 @@
+[submodule "Tensor-Dumper"]
+	path = Tensor-Dumper
+	url = https://github.com/DandinPower/Tensor-Dumper.git

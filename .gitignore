@@ -1,0 +1,11 @@
+# Some cache or settings files
+.vscode
+__pycache__
+
+# Virtual environment
+venv
+
+# Build files
+build/
+dist/
+*.egg-info/
