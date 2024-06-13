@@ -6,7 +6,7 @@ from time import perf_counter
 
 from .constants import HISTOGRAM_SIZE
 
-def draw_all_distribution(save_name:str, tensors: np.ndarray, start_level: int, end_level: int) -> None:
+def draw_all_distribution(save_name:str, tensors: np.ndarray, start_level: int, end_level: int, max_value: float, min_value: float) -> None:
     drawing_levels = np.logspace(start_level, end_level, num=HISTOGRAM_SIZE)
     
     abs_save_name = os.path.abspath(save_name)
@@ -21,6 +21,14 @@ def draw_all_distribution(save_name:str, tensors: np.ndarray, start_level: int, 
     plt.ylabel("Number of elements")
     plt.hist(tensors, bins=drawing_levels)
     plt.gca().set_xscale("log")  # Set x-axis to logarithmic scale
+
+    # Add vertical lines for max and min values
+    plt.axvline(max_value, color='r', linestyle='dashed', linewidth=2)
+    plt.axvline(min_value, color='b', linestyle='dashed', linewidth=2)
+
+    # Add text annotations for max and min values
+    plt.text(max_value, plt.gca().get_ylim()[1]/2, f'Max: {max_value}', color='r')
+    plt.text(min_value, plt.gca().get_ylim()[1]/2, f'Min: {min_value}', color='b')
 
     def format_func(value, tick_number):
         return f"1e{int(np.log10(value))}"

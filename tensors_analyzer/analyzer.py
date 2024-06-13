@@ -20,11 +20,14 @@ class Tensor:
         return self.tensor_data.size
     
 class TensorsAnalyzer:
-    def __init__(self, verbose=False) -> None:
+    def __init__(self, filename_constraint: str, verbose=False) -> None:
         self.verbose: bool = verbose
         self.tensors: list[Tensor] = []
         self.flat_tensor: np.ndarray | None = None
         self.flat_tensor_size: int = 0
+        self.max_value = -np.inf
+        self.min_value =  np.inf
+        self.filename_constraint = filename_constraint
 
     def print(self, msg: str) -> None:
         if self.verbose:
@@ -41,6 +44,8 @@ class TensorsAnalyzer:
         total_elements = 0
         files = os.listdir(foldername)
         for file in tqdm(files, total=len(files)):
+            if self.filename_constraint not in file:
+                continue
             assert file.endswith('.npz'), 'Only .npz files are supported, please ensure all files in the folder are dumped by TensorDumper'
             temp_tensor = Dumper.load_tensor_in_numpy(os.path.join(foldername, file))
             total_elements += temp_tensor.size
@@ -60,6 +65,8 @@ class TensorsAnalyzer:
             self.print(f'Loading tensors from folder: {foldername}')
             files = os.listdir(foldername)
             for file in tqdm(files, total=len(files)):
+                if self.filename_constraint not in file:
+                    continue
                 assert file.endswith('.npz'), 'Only .npz files are supported, please ensure all files in the folder are dumped by TensorDumper'
                 temp_tensor = Dumper.load_tensor_in_numpy(os.path.join(foldername, file))
                 assert temp_tensor.dtype == np.float16 or temp_tensor.dtype == np.float32, 'Only float16 and float32 dtypes are supported'
@@ -78,9 +85,20 @@ class TensorsAnalyzer:
                 self.tensors.append(Tensor(file, narrow_tensor, start_index, temp_length))
                 start_index += temp_length
 
+                temp_max = np.max(narrow_tensor)
+                temp_min = np.min(narrow_tensor)
+                if temp_max > self.max_value:
+                    self.max_value = temp_max
+                if temp_min < self.min_value:
+                    self.min_value = temp_min
+
+        print(f"Max value: {self.max_value:.12f}")
+        print(f"Min value: {self.min_value:.12f}")
+        print(f"Total elements: {self.flat_tensor_size}")
+
     def draw_distribution(self, save_name: str, start_level: int, end_level: int) -> None:
         assert self.flat_tensor is not None, 'Please load the tensors first'
         dirname = os.path.dirname(save_name)
         if dirname:
             os.makedirs(dirname, exist_ok=True)
-        draw_all_distribution(save_name, self.flat_tensor, start_level, end_level)
+        draw_all_distribution(save_name, self.flat_tensor, start_level, end_level, self.max_value, self.min_value)

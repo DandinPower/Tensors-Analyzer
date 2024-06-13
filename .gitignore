@@ -9,3 +9,6 @@ venv
 build/
 dist/
 *.egg-info/
+
+# Test results
+*.png
